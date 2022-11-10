@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  airflow:
+    container_name: airflow
+    build: ./airflow
+    ports:
+      - "9000:9000"
+    volumes:
+      - "./airflow:/airflow"
+    depends_on:
+      - "db"
+      - "provider_a"
+      - "provider_b"
+  db:
+    image: "postgres"
+    container_name: "db"
+    environment:
+      - POSTGRES_PASSWORD=1234
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=aviata_tz
+    ports:
+      - "5432:5432"
+    expose:
+      - "5432"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+  provider_a:
+    container_name: provider_a
+    build: ./provider_a
+    ports:
+      - "9001:9001"
+    volumes:
+      - "./provider_a:/provider_a"
+  provider_b:
+    container_name: provider_b
+    build: ./provider_b
+    ports:
+      - "9002:9002"
+    volumes:
+      - "./provider_b:/provider_b"
